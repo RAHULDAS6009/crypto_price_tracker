@@ -95,8 +95,16 @@ const cryptoSlice = createSlice({
     updateAssets(state, action: PayloadAction<Asset[]>) {
       state.assets = action.payload
     },
+    updateSingleAsset: (state, action) => {
+      const { symbol, price, volume24h } = action.payload
+      const asset = state.assets.find(a => a.symbol === symbol.slice(0, -4)) 
+      if (asset) {
+        asset.price = price
+        asset.volume24h = volume24h
+      }
+    }
   },
 })
 
-export const { updateAssets } = cryptoSlice.actions
+export const { updateAssets,updateSingleAsset } = cryptoSlice.actions
 export default cryptoSlice.reducer

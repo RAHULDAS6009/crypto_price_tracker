@@ -1,17 +1,20 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from './store'
-import { updateAssets } from './features/crypto/cryptoSlice'
-import { useEffect } from 'react'
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "./store";
+import { updateAssets } from "./features/crypto/cryptoSlice";
+import { useEffect, useMemo, useState } from "react";
+import { useBinanceSocket } from "./hooks/useBInaneSocket";
 
 function App() {
-  const dispatch = useDispatch()
-  const assets = useSelector((state: RootState) => state.crypto.assets)
+  useBinanceSocket();
+  const dispatch = useDispatch();
+  const assets = useSelector((state: RootState) => state.crypto.assets);
+  const [filter,setFilter]=useState<String>()
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const updated = assets.map(asset => {
-        const priceChange = (Math.random() - 0.5) * 100
-        const volumeChange = (Math.random() - 0.5) * 1000000000
+      const updated = assets.map((asset) => {
+        const priceChange = (Math.random() - 0.5) * 100;
+        const volumeChange = (Math.random() - 0.5) * 1000000000;
         return {
           ...asset,
           price: +(asset.price + priceChange).toFixed(2),
@@ -19,17 +22,37 @@ function App() {
           change24h: +(Math.random() * 5 - 2.5).toFixed(2),
           change7d: +(Math.random() * 10 - 5).toFixed(2),
           volume24h: +(asset.volume24h + volumeChange).toFixed(2),
-        }
-      })
-      dispatch(updateAssets(updated))
-    }, 1500)
+        };
+      });
+      dispatch(updateAssets(updated));
+    }, 1500);
 
-    return () => clearInterval(interval)
-  }, [dispatch, assets])
+    return () => clearInterval(interval);
+  }, [dispatch, assets]);
+  const filteredAssets = useMemo(() => {
+    if (filter === "topGainers") {
+      return [...assets].sort((a, b) => b.change24h - a.change24h).slice(0, 5);
+    }
+    if (filter === "topVolume") {
+      return [...assets].sort((a, b) => b.volume24h - a.volume24h).slice(0, 5);
+    }
+    return assets;
+  }, [filter, assets]);
 
   return (
     <div className="p-4 overflow-x-auto">
-      <h1 className="text-2xl font-bold mb-6 text-center"> Crypto Price Tracker</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">
+        {" "}
+        Crypto Price Tracker
+      </h1>
+      <div className="flex gap-4 mb-4">
+        <button  onClick={() => setFilter("topGainers")} className="bg-red-200 cursor-pointer">
+          Top Gainers
+        </button>
+        <button onClick={() => setFilter("topVolume")} className="">
+          Top Volume
+        </button>
+      </div>
       <table className="min-w-[1000px] w-full table-auto border-collapse">
         <thead className="bg-gray-100">
           <tr>
@@ -49,7 +72,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {assets.map((asset, index) => (
+          {filteredAssets.map((asset, index) => (
             <tr key={asset.id} className="text-center border-t">
               <td className="p-2">{index + 1}</td>
               <td className="p-2">
@@ -57,25 +80,38 @@ function App() {
                   src={`https://cryptologos.cc/logos/${asset.id}-logo.png`}
                   alt={asset.name}
                   className="w-6 h-6 mx-auto"
-                  onError={(e) => (e.currentTarget.style.display = 'none')}
+                  onError={(e) => (e.currentTarget.style.display = "none")}
                 />
               </td>
               <td className="p-2">{asset.name}</td>
               <td className="p-2">{asset.symbol}</td>
               <td className="p-2">${asset.price.toLocaleString()}</td>
-              <td className="p-2" style={{ color: asset.change1h >= 0 ? 'green' : 'red' }}>
+              <td
+                className="p-2"
+                style={{ color: asset.change1h >= 0 ? "green" : "red" }}
+              >
                 {asset.change1h}%
               </td>
-              <td className="p-2" style={{ color: asset.change24h >= 0 ? 'green' : 'red' }}>
+              <td
+                className="p-2"
+                style={{ color: asset.change24h >= 0 ? "green" : "red" }}
+              >
                 {asset.change24h}%
               </td>
-              <td className="p-2" style={{ color: asset.change7d >= 0 ? 'green' : 'red' }}>
+              <td
+                className="p-2"
+                style={{ color: asset.change7d >= 0 ? "green" : "red" }}
+              >
                 {asset.change7d}%
               </td>
               <td className="p-2">${(asset.marketCap / 1e9).toFixed(2)}B</td>
               <td className="p-2">${(asset.volume24h / 1e9).toFixed(2)}B</td>
-              <td className="p-2">{asset.circulatingSupply.toLocaleString()}</td>
-              <td className="p-2">{asset.maxSupply ? asset.maxSupply.toLocaleString() : '∞'}</td>
+              <td className="p-2">
+                {asset.circulatingSupply.toLocaleString()}
+              </td>
+              <td className="p-2">
+                {asset.maxSupply ? asset.maxSupply.toLocaleString() : "∞"}
+              </td>
               <td className="p-2">
                 <img
                   src="https://via.placeholder.com/80x30?text=Chart"
@@ -88,7 +124,7 @@ function App() {
         </tbody>
       </table>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
