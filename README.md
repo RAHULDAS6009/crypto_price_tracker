@@ -1,54 +1,64 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Project Setup Guide
 
-Currently, two official plugins are available:
+## Technologies Used
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   **React**: Frontend library for building user interfaces
+-   **Redux**: State management library
+-   **Redux Toolkit**: Official toolset for Redux development
+-   **WebSockets**: Real-time communication
+-   **Tailwind CSS**: Utility-first CSS framework
+-   **TypeScript**: Static type checking
+-   **React Router**: Client-side routing
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Setup Instructions
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/crypto_price_tracker.git
+cd crypto_price_tracker
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm install
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
 ```
+
+
+### 3. Start the development server
+
+```bash
+npm start
+
+```
+
+
+
+## Project Structure
+
+```
+src/
+├── components/        # Reusable UI components
+├── features/          # Feature-based modules
+├── store/             # Redux store setup
+├── App.tsx            # Main App component
+└── index.tsx          # Entry point
+
+```
+
+## Redux Configuration
+
+Redux is configured using Redux Toolkit. Create slices for different features and combine them in the store.
+
+## WebSocket Implementation
+
+WebSockets are implemented using native WebSocket API , connecting to the WebSocket server defined in the environment variables.
+
+## Tailwind Configuration
+
+Tailwind CSS is configured to scan all components and purge unused styles in production builds.
