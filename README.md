@@ -36,8 +36,8 @@ npm install
 npm start
 
 ```
-### DEMO VIDEO
-https://drive.google.com/file/d/1uO0sUqsLj5nxfi1Izp6opcvtvlOpyJSy/view?usp=sharing
+[![Watch the demo](https://img.youtube.com/vi/ZQjd2FV5fjI/0.jpg)](https://www.youtube.com/watch?v=ZQjd2FV5fjI)
+
 
 
 ## Project Structure
