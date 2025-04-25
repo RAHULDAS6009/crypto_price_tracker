@@ -2,19 +2,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store";
 import { updateAssets } from "./features/crypto/cryptoSlice";
 import { useEffect, useMemo, useState } from "react";
-import { useBinanceSocket } from "./hooks/useBInaneSocket";
+import { useBinanceSocket } from "./hooks/useBinanceSocket";
+import AssetTable from "./components/AssetTable";
+import FilterButtons from "./components/FilterButtons";
 
 function App() {
   useBinanceSocket();
   const dispatch = useDispatch();
   const assets = useSelector((state: RootState) => state.crypto.assets);
-  const [filter,setFilter]=useState<String>()
+  const [filter, setFilter] = useState<string>();
 
   useEffect(() => {
     const interval = setInterval(() => {
       const updated = assets.map((asset) => {
         const priceChange = (Math.random() - 0.5) * 100;
-        const volumeChange = (Math.random() - 0.5) * 1000000000;
+        const volumeChange = (Math.random() - 0.5) * 1e9;
         return {
           ...asset,
           price: +(asset.price + priceChange).toFixed(2),
@@ -26,9 +28,9 @@ function App() {
       });
       dispatch(updateAssets(updated));
     }, 1500);
-
     return () => clearInterval(interval);
   }, [dispatch, assets]);
+
   const filteredAssets = useMemo(() => {
     if (filter === "topGainers") {
       return [...assets].sort((a, b) => b.change24h - a.change24h).slice(0, 5);
@@ -41,88 +43,9 @@ function App() {
 
   return (
     <div className="p-4 overflow-x-auto">
-      <h1 className="text-2xl font-bold mb-6 text-center">
-        {" "}
-        Crypto Price Tracker
-      </h1>
-      <div className="flex gap-4 mb-4">
-        <button  onClick={() => setFilter("topGainers")} className="bg-red-200 cursor-pointer">
-          Top Gainers
-        </button>
-        <button onClick={() => setFilter("topVolume")} className="">
-          Top Volume
-        </button>
-      </div>
-      <table className="min-w-[1000px] w-full table-auto border-collapse">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2">#</th>
-            <th className="p-2">Logo</th>
-            <th className="p-2">Name</th>
-            <th className="p-2">Symbol</th>
-            <th className="p-2">Price</th>
-            <th className="p-2">1h %</th>
-            <th className="p-2">24h %</th>
-            <th className="p-2">7d %</th>
-            <th className="p-2">Market Cap</th>
-            <th className="p-2">24h Volume</th>
-            <th className="p-2">Circulating Supply</th>
-            <th className="p-2">Max Supply</th>
-            <th className="p-2">7D Chart</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredAssets.map((asset, index) => (
-            <tr key={asset.id} className="text-center border-t">
-              <td className="p-2">{index + 1}</td>
-              <td className="p-2">
-                <img
-                  src={`https://cryptologos.cc/logos/${asset.id}-logo.png`}
-                  alt={asset.name}
-                  className="w-6 h-6 mx-auto"
-                  onError={(e) => (e.currentTarget.style.display = "none")}
-                />
-              </td>
-              <td className="p-2">{asset.name}</td>
-              <td className="p-2">{asset.symbol}</td>
-              <td className="p-2">${asset.price.toLocaleString()}</td>
-              <td
-                className="p-2"
-                style={{ color: asset.change1h >= 0 ? "green" : "red" }}
-              >
-                {asset.change1h}%
-              </td>
-              <td
-                className="p-2"
-                style={{ color: asset.change24h >= 0 ? "green" : "red" }}
-              >
-                {asset.change24h}%
-              </td>
-              <td
-                className="p-2"
-                style={{ color: asset.change7d >= 0 ? "green" : "red" }}
-              >
-                {asset.change7d}%
-              </td>
-              <td className="p-2">${(asset.marketCap / 1e9).toFixed(2)}B</td>
-              <td className="p-2">${(asset.volume24h / 1e9).toFixed(2)}B</td>
-              <td className="p-2">
-                {asset.circulatingSupply.toLocaleString()}
-              </td>
-              <td className="p-2">
-                {asset.maxSupply ? asset.maxSupply.toLocaleString() : "∞"}
-              </td>
-              <td className="p-2">
-                <img
-                  src="https://via.placeholder.com/80x30?text=Chart"
-                  alt="7D Chart"
-                  className="mx-auto"
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Crypto Price Tracker</h1>
+      <FilterButtons onSelect={setFilter} />
+      <AssetTable assets={filteredAssets} />
     </div>
   );
 }
