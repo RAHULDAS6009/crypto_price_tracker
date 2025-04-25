@@ -8,8 +8,10 @@ export const useBinanceSocket = () => {
   useEffect(() => {
     const socket = new WebSocket('wss://stream.binance.com:9443/ws/!miniTicker@arr')
 
+
     socket.onmessage = (event) => {
       const tickers = JSON.parse(event.data)
+      console.log(tickers)
 
       const relevantSymbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'XRPUSDT', 'SOLUSDT']
 
